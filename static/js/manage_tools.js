@@ -15,16 +15,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const toolSearch = document.getElementById('toolSearch');
     const toolImageInput = document.getElementById('toolImage');
     const fileNameSpan = document.getElementById('fileName');
+    const toolConditionSelect = document.getElementById('toolCondition');
+    const toolTotalQuantityInput = document.getElementById('toolTotalQuantity');
+    const quantityHelpText = document.getElementById('quantityHelpText');
     
     let allTools = []; // Array para guardar todas as ferramentas
     let editingToolId = null; // Guarda o ID da ferramenta sendo editada
 
     // --- Funções Auxiliares ---
-
-    // Função genérica para fazer requisições à API com autenticação e refresh de token
     async function fetchWithAuth(url, options = {}) {
         options.headers = { ...options.headers };
-        // Não envie 'Content-Type' quando usar FormData, o navegador faz isso
         if (!(options.body instanceof FormData)) {
             options.headers['Content-Type'] = 'application/json';
         }
@@ -36,9 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const refreshed = await refreshToken();
             if (refreshed) {
                 options.headers['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
-                response = await fetch(url, options); // Tenta a requisição novamente
+                response = await fetch(url, options);
             } else {
-                window.location.href = "/login"; // Redireciona se o refresh falhar
+                window.location.href = "/login";
                 return null;
             }
         }
@@ -46,13 +46,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- Funções do Modal ---
-    
     function openModalForNew() {
         editingToolId = null;
         modalTitle.textContent = "Adicionar Nova Ferramenta";
         submitBtn.textContent = "Salvar Ferramenta";
-        toolForm.reset(); // Limpa o formulário
-        fileNameSpan.textContent = 'Nenhum arquivo escolhido'; // Limpa o nome do arquivo
+        toolForm.reset();
+        fileNameSpan.textContent = 'Nenhum arquivo escolhido';
+        // Garante que o campo de quantidade esteja editável
+        toolTotalQuantityInput.readOnly = false;
+        quantityHelpText.style.display = 'none';
         toolModal.classList.add('show');
     }
     
@@ -61,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
         modalTitle.textContent = "Editar Ferramenta";
         submitBtn.textContent = "Atualizar Ferramenta";
         
-        // Preenche o formulário com os dados da ferramenta
         toolForm.name.value = tool.name;
         toolForm.description.value = tool.description || '';
         toolForm.condition.value = tool.condition;
@@ -72,7 +73,16 @@ document.addEventListener("DOMContentLoaded", () => {
         toolForm.last_maintenance_date.value = tool.last_maintenance_date || '';
         toolForm.next_maintenance_date.value = tool.next_maintenance_date || '';
         toolForm.supplier.value = tool.supplier || '';
-        fileNameSpan.textContent = 'Nenhum arquivo escolhido'; // Reseta o campo de imagem
+        fileNameSpan.textContent = 'Nenhum arquivo escolhido';
+        
+        // Aplica a lógica de manutenção ao abrir para editar
+        if (tool.condition === 'maintenance') {
+            toolTotalQuantityInput.readOnly = true;
+            quantityHelpText.style.display = 'block';
+        } else {
+            toolTotalQuantityInput.readOnly = false;
+            quantityHelpText.style.display = 'none';
+        }
 
         toolModal.classList.add('show');
     }
@@ -82,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- Funções de Renderização e API ---
-
     function renderTools(toolsToRender) {
         toolCardsContainer.innerHTML = '';
         if (toolsToRender.length === 0) {
@@ -95,7 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="tool-card">
                     <div class="tool-card-header">
                         <img src="${tool.image || 'https://via.placeholder.com/300x180'}" alt="Imagem da Ferramenta" class="tool-image">
-                        <span class="status-badge status-${tool.condition}">${tool.condition_display}</span>                    </div>
+                        <span class="status-badge status-${tool.condition}">${tool.condition_display}</span>
+                    </div>
                     <div class="tool-card-content">
                         <h3>${tool.name}</h3>
                         <div class="tool-stats">
@@ -127,13 +137,11 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         
         const formData = new FormData(toolForm);
-        // Se o campo de imagem não foi alterado, removemos para não enviar um valor vazio
-        if (formData.get('image') && formData.get('image').size === 0) {
-            formData.delete('image');
-        }
+        // Se a quantidade foi desabilitada, reabilita antes de enviar para garantir que o valor seja incluído
+        toolTotalQuantityInput.readOnly = false;
 
         const url = editingToolId ? `/api/tools/${editingToolId}/` : '/api/tools/';
-        const method = editingToolId ? 'PATCH' : 'POST'; // Usar PATCH é melhor para atualizações parciais
+        const method = editingToolId ? 'PATCH' : 'POST';
 
         const response = await fetchWithAuth(url, { method: method, body: formData });
 
@@ -142,18 +150,31 @@ document.addEventListener("DOMContentLoaded", () => {
             fetchTools();
         } else {
             const errorData = await response.json();
-            alert(`Erro ao salvar: ${JSON.stringify(errorData)}`);
+            // Transforma o erro da API em uma mensagem legível
+            const errorMessage = Object.entries(errorData).map(([key, value]) => `${key}: ${value.join(', ')}`).join('\n');
+            alert(`Erro ao salvar:\n${errorMessage}`);
         }
     }
     
     // --- Adicionando Event Listeners ---
-
     addNewToolBtn.addEventListener('click', openModalForNew);
     closeButton.addEventListener('click', closeModal);
     toolModal.addEventListener('click', (event) => {
         if (event.target === toolModal) closeModal();
     });
     toolForm.addEventListener('submit', handleFormSubmit);
+
+    // Lógica interativa para o campo de Condição
+    toolConditionSelect.addEventListener('change', () => {
+        if (toolConditionSelect.value === 'maintenance') {
+            toolTotalQuantityInput.value = 0;
+            toolTotalQuantityInput.readOnly = true;
+            quantityHelpText.style.display = 'block';
+        } else {
+            toolTotalQuantityInput.readOnly = false;
+            quantityHelpText.style.display = 'none';
+        }
+    });
 
     // Lógica do input de arquivo customizado
     toolImageInput.addEventListener('change', () => {
@@ -175,7 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toolCardsContainer.addEventListener('click', async (event) => {
         const target = event.target.closest('button');
         if (!target) return;
-
         const toolId = target.dataset.id;
         
         if (target.classList.contains('edit-tool-btn')) {
@@ -186,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (target.classList.contains('delete-tool-btn')) {
             if (confirm('Tem certeza que deseja deletar esta ferramenta?')) {
                 const response = await fetchWithAuth(`/api/tools/${toolId}/`, { method: 'DELETE' });
-                if (response && response.status === 204) { // 204 No Content é a resposta de sucesso para DELETE
+                if (response && response.status === 204) {
                     fetchTools();
                 } else {
                     alert('Erro ao deletar a ferramenta.');

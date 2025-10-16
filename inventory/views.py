@@ -205,7 +205,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
         # 2. Valor Total do Inventário por Ferramenta (Gráfico de Barras)
         inventory_value = Tool.objects.annotate(
             total_value=F('total_quantity') * F('unit_value')
-        ).values('name', 'total_value').order_by('-total_value')[:10] # Top 10 mais valiosas
+        ).values('name', 'total_value').order_by('-total_value')[:10]
 
         # 3. Custos de Manutenção por Mês (Gráfico de Linha)
         maintenance_costs = Tool.objects.filter(last_maintenance_date__isnull=False).annotate(
@@ -221,6 +221,16 @@ class AnalyticsViewSet(viewsets.ViewSet):
             count=Count('id')
         ).order_by('month')
 
+        # ✅ 5. CÁLCULO PARA O NOVO GRÁFICO: Quantidade de Manutenções por Mês
+        maintenances_per_month = Tool.objects.filter(
+            condition='maintenance', 
+            last_maintenance_date__isnull=False
+        ).annotate(
+            month=TruncMonth('last_maintenance_date')
+        ).values('month').annotate(
+            count=Count('id')
+        ).order_by('month')
+
         # Monta a resposta da API
         data = {
             'tools_by_condition': list(tools_by_condition),
@@ -230,6 +240,10 @@ class AnalyticsViewSet(viewsets.ViewSet):
             ],
             'loan_activity': [
                 {'month': entry['month'].strftime('%Y-%m'), 'count': entry['count']} for entry in loan_activity
+            ],
+            # ✅ ADICIONA OS DADOS DO NOVO GRÁFICO À RESPOSTA
+            'maintenances_per_month': [
+                {'month': entry['month'].strftime('%Y-%m'), 'count': entry['count']} for entry in maintenances_per_month
             ],
         }
         return Response(data)

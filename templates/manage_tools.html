@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{% static 'css/manage_tools.css' %}">
 {% endblock %}
 
+
 {% block content %}
 <div class="manage-tools-container">
     <h1>Gerenciamento de Ferramentas</h1>
@@ -63,19 +64,22 @@
                     <div class="form-group">
                         <label for="toolTotalQuantity">Quantidade Total</label>
                         <input type="number" id="toolTotalQuantity" name="total_quantity" min="0" value="1" required>
+                        <small id="quantityHelpText" style="display: none; color: #a0a0b0; margin-top: 5px;">
+                            Ferramentas em manutenção têm quantidade 0.
+                        </small>
                     </div>
                 </div>
             </fieldset>
-
+            
             <fieldset>
-                <legend>Detalhes Financeiros</legend>
+                <legend>Detalhes Financeiros e Manutenção</legend>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="toolUnitValue">Valor Unitário (R$)</label>
                         <input type="number" id="toolUnitValue" name="unit_value" step="0.01" value="0.00" required>
                     </div>
                     <div class="form-group">
-                        <label for="toolMaintenanceCost">Custo de Manutenção (R$)</label>
+                        <label for="toolMaintenanceCost">Valor da Manutenção (R$)</label>
                         <input type="number" id="toolMaintenanceCost" name="maintenance_cost" step="0.01" value="0.00">
                     </div>
                 </div>
@@ -101,15 +105,12 @@
 
             <div class="form-group form-group-full-width">
                 <label>Imagem da Ferramenta (Opcional)</label>
-                
                 <div class="file-input-wrapper">
                     <input type="file" id="toolImage" name="image" accept="image/*">
-                    
                     <label for="toolImage" class="file-input-label">
                         <i class="fas fa-upload"></i>
                         <span>Escolher arquivo</span>
                     </label>
-                    
                     <span id="fileName" class="file-name">Nenhum arquivo escolhido</span>
                 </div>
             </div>

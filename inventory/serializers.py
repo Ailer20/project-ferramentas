@@ -51,22 +51,26 @@ class LoanSerializer(serializers.ModelSerializer):
         read_only_fields = ['borrowed_date']
 
     def validate(self, data):
-        """
-        Validação customizada para garantir que a quantidade solicitada
-        não exceda a quantidade disponível da ferramenta.
-        """
-        # Pega a ferramenta e a quantidade dos dados da requisição
-        tool = data.get('tool')
-        quantity = data.get('quantity')
-        
-        # Se for uma atualização (instance existe), precisamos considerar a quantidade já emprestada.
-        current_loan_quantity = self.instance.quantity if self.instance else 0
-        
-        # Calcula a disponibilidade real, adicionando de volta o que já estava neste empréstimo
-        effective_available = tool.available_quantity + current_loan_quantity
+            # Pega a condição do dado que está chegando. Se não estiver lá, pega do objeto existente (em caso de edição)
+            condition = data.get('condition', self.instance.condition if self.instance else None)
 
-        if quantity > effective_available:
-            raise serializers.ValidationError(
-                f"Quantidade solicitada ({quantity}) maior que a disponível ({tool.available_quantity})."
-            )
-        return data
+            if condition == 'maintenance':
+                maintenance_cost = data.get('maintenance_cost', self.instance.maintenance_cost if self.instance else None)
+                
+                # 1. VALIDAÇÃO: Custo de manutenção é obrigatório e positivo
+                if not maintenance_cost or float(maintenance_cost) <= 0:
+                    raise serializers.ValidationError(
+                        {"maintenance_cost": "Valor da manutenção é obrigatório e deve ser positivo se a condição for 'Em Manutenção'."}
+                    )
+                
+                # 2. LÓGICA DE NEGÓCIO: Zera a quantidade total
+                # Ao salvar, a quantidade será 0, e a 'available_quantity' será recalculada automaticamente
+                data['total_quantity'] = 0
+
+                # 3. REGISTRO PARA GRÁFICO: Garante que a data da manutenção seja registrada
+                # Se a data não for enviada, usamos a data de hoje
+                if 'last_maintenance_date' not in data or not data['last_maintenance_date']:
+                    from django.utils import timezone
+                    data['last_maintenance_date'] = timezone.now().date()
+            
+            return data

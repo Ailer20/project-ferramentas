@@ -3,9 +3,12 @@ import { refreshToken } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ✅ PASSO 1: Declarar variáveis para guardar as instâncias dos gráficos
-    let toolsByConditionChart, inventoryValueChart, maintenanceCostChart, loanActivityChart;
+    // Variables to hold the chart instances
+    let toolsByConditionChart, inventoryValueChart, maintenanceCostChart, loanActivityChart, maintenancesPerMonthChart;
 
+    // --- Helper Functions ---
+
+    // Handles authenticated API requests
     async function fetchWithAuth(url, options = {}) {
         options.headers = { ...options.headers, 'Authorization': `Bearer ${localStorage.getItem('access_token')}` };
         let response = await fetch(url, options);
@@ -14,28 +17,35 @@ document.addEventListener("DOMContentLoaded", () => {
             if (refreshed) {
                 options.headers['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
                 response = await fetch(url, options);
-            } else { window.location.href = "/login"; return null; }
+            } else {
+                window.location.href = "/login";
+                return null;
+            }
         }
         return response;
     }
     
-    const conditionLabels = { 'good': 'Boa Condição', 'new': 'Novo', 'recovered': 'Recuperada', 'maintenance': 'Em Manutenção' };
-    const chartColors = ['#8e2de2', '#4a00e0', '#17a2b8', '#28a745', '#ffc107', '#dc3545'];
-
+    // --- Main Function to Load and Render Charts ---
+    
     async function loadAnalytics() {
         const response = await fetchWithAuth('/api/analytics/');
         if (!response || !response.ok) {
-            console.error("Falha ao buscar dados de análise.");
+            console.error("Failed to fetch analytics data.");
             return;
         }
         const data = await response.json();
 
-        // --- Gráfico 1: Ferramentas por Condição (Pizza) ---
-        
-        // ✅ PASSO 2: Destruir o gráfico antigo antes de criar um novo
-        if (toolsByConditionChart) {
-            toolsByConditionChart.destroy();
-        }
+        // --- Chart Configuration based on Theme ---
+        const isDarkMode = document.body.classList.contains('dark-theme');
+        const textColor = isDarkMode ? '#a0a0b0' : '#737373';
+        const gridColor = isDarkMode ? 'rgba(160, 160, 176, 0.1)' : 'rgba(115, 115, 115, 0.1)';
+        const legendColor = isDarkMode ? '#e0e0e0' : '#081E26';
+
+        const conditionLabels = { 'good': 'Boa Condição', 'new': 'Novo', 'recovered': 'Recuperada', 'maintenance': 'Em Manutenção' };
+        const chartColors = ['#28a745', '#007bff', '#17a2b8', '#dc3545', '#ffc107'];
+
+        // --- 1. Tools by Condition Chart (Doughnut) ---
+        if (toolsByConditionChart) toolsByConditionChart.destroy();
         toolsByConditionChart = new Chart(document.getElementById('toolsByConditionChart'), {
             type: 'doughnut',
             data: {
@@ -44,16 +54,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     label: 'Ferramentas',
                     data: data.tools_by_condition.map(item => item.count),
                     backgroundColor: chartColors,
-                    borderColor: '#1f1f3a',
+                    borderColor: isDarkMode ? '#1f1f3a' : '#FFFFFF',
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: document.body.classList.contains('dark-theme') ? '#fff' : '#333' } } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: legendColor } } }
+            }
         });
 
-        // --- Gráfico 2: Valor do Inventário (Barras) ---
-        if (inventoryValueChart) {
-            inventoryValueChart.destroy();
-        }
+        // --- 2. Inventory Value Chart (Bar) ---
+        if (inventoryValueChart) inventoryValueChart.destroy();
         inventoryValueChart = new Chart(document.getElementById('inventoryValueChart'), {
             type: 'bar',
             data: {
@@ -64,13 +76,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     backgroundColor: '#4a00e0',
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
+            options: {
+                indexAxis: 'y', // Horizontal bars
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
+                plugins: { legend: { labels: { color: legendColor } } }
+            }
         });
 
-        // --- Gráfico 3: Custos de Manutenção (Linha) ---
-        if (maintenanceCostChart) {
-            maintenanceCostChart.destroy();
-        }
+        // --- 3. Maintenance Cost Chart (Line) ---
+        if (maintenanceCostChart) maintenanceCostChart.destroy();
         maintenanceCostChart = new Chart(document.getElementById('maintenanceCostChart'), {
             type: 'line',
             data: {
@@ -79,16 +95,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     label: 'Custo Mensal (R$)',
                     data: data.maintenance_cost_over_time.map(item => item.total_cost),
                     borderColor: '#dc3545',
-                    tension: 0.1
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    fill: true,
+                    tension: 0.2
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
+                plugins: { legend: { labels: { color: legendColor } } }
+            }
         });
 
-        // --- Gráfico 4: Atividade de Empréstimos (Barras) ---
-        if (loanActivityChart) {
-            loanActivityChart.destroy();
-        }
+        // --- 4. Loan Activity Chart (Bar) ---
+        if (loanActivityChart) loanActivityChart.destroy();
         loanActivityChart = new Chart(document.getElementById('loanActivityChart'), {
             type: 'bar',
             data: {
@@ -99,9 +120,35 @@ document.addEventListener("DOMContentLoaded", () => {
                     backgroundColor: '#17a2b8',
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
+                plugins: { legend: { labels: { color: legendColor } } }
+            }
+        });
+
+        // --- 5. Maintenances per Month Chart (Bar) ---
+        if (maintenancesPerMonthChart) maintenancesPerMonthChart.destroy();
+        maintenancesPerMonthChart = new Chart(document.getElementById('maintenancesPerMonthChart'), {
+            type: 'bar',
+            data: {
+                labels: data.maintenances_per_month.map(item => item.month),
+                datasets: [{
+                    label: 'Nº de Manutenções',
+                    data: data.maintenances_per_month.map(item => item.count),
+                    backgroundColor: '#ffc107', // Maintenance yellow color
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
+                plugins: { legend: { labels: { color: legendColor } } }
+            }
         });
     }
 
+    // --- Initial Load ---
     loadAnalytics();
 });
