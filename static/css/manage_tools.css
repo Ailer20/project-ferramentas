@@ -66,8 +66,7 @@
 .status-good { background-color: #28a745; color: white; }
 .status-new { background-color: #007bff; color: white; }
 .status-recovered { background-color: #17a2b8; color: white; }
-.status-maintenance { background-color: #ffc107; color: #12121c; }
-
+.status-maintenance { background-color: #dc3545; color: white; }
 .tool-card-content { padding: 20px; }
 .tool-card-content h3 {
     font-size: 1.3em;

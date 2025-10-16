@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Lógica de Exportação ---
 
-    // Função genérica para requisições autenticadas
     async function fetchWithAuth(url, options = {}) {
         options.headers = { ...options.headers, 'Authorization': `Bearer ${localStorage.getItem('access_token')}` };
         let response = await fetch(url, options);
@@ -29,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return response;
     }
 
-    // Função para iniciar o download do arquivo CSV
     async function exportCSV(endpoint, filename) {
         const response = await fetchWithAuth(endpoint);
         if (response && response.ok) {
@@ -49,49 +47,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Adiciona os listeners aos botões de exportação com as URLs corretas
-    exportToolsBtn.addEventListener('click', () => {
-        exportCSV('/api/export/tools/', 'ferramentas.csv');
-    });
+    // ✅ CORREÇÃO: URLs ajustadas e verificação para evitar erros
+    if (exportToolsBtn) {
+        exportToolsBtn.addEventListener('click', () => {
+            exportCSV('/api/export/tools/', 'ferramentas.csv');
+        });
+    }
 
-    exportActiveLoansBtn.addEventListener('click', () => {
-        exportCSV('/api/export/active-loans/', 'emprestimos_ativos.csv');
-    });
-
-    exportHistoryBtn.addEventListener('click', () => {
-        exportCSV('/api/export/loan-history/', 'historico_emprestimos.csv');
-    });
+    if (exportActiveLoansBtn) {
+        exportActiveLoansBtn.addEventListener('click', () => {
+            exportCSV('/api/export/active-loans/', 'emprestimos_ativos.csv');
+        });
+    }
+    
+    if (exportHistoryBtn) {
+        exportHistoryBtn.addEventListener('click', () => {
+            exportCSV('/api/export/loan-history/', 'historico_emprestimos.csv');
+        });
+    }
 
 
     // --- Lógica do Interruptor de Tema ---
+    if (themeToggle) {
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        }
 
-    // Função para aplicar o tema e salvar a preferência
-    function applyTheme(theme) {
-        if (theme === 'dark') {
-            document.body.classList.add('dark-theme');
-            localStorage.setItem('theme', 'dark');
+        themeToggle.addEventListener('change', () => {
+            applyTheme(themeToggle.checked ? 'dark' : 'light');
+        });
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            themeToggle.checked = true;
+            if (!document.body.classList.contains('dark-theme')) {
+                document.body.classList.add('dark-theme');
+            }
         } else {
+            themeToggle.checked = false;
             document.body.classList.remove('dark-theme');
-            localStorage.setItem('theme', 'light');
         }
-    }
-
-    // Listener para quando o interruptor é clicado
-    themeToggle.addEventListener('change', () => {
-        applyTheme(themeToggle.checked ? 'dark' : 'light');
-    });
-
-    // Verifica a preferência salva ao carregar a página e define o estado do interruptor
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        themeToggle.checked = true;
-        // A aplicação do tema já deve ser feita por um script principal (main.js ou no base.html),
-        // aqui apenas garantimos que o interruptor reflita o estado correto.
-        if (!document.body.classList.contains('dark-theme')) {
-            document.body.classList.add('dark-theme');
-        }
-    } else {
-        themeToggle.checked = false;
-        document.body.classList.remove('dark-theme');
     }
 });

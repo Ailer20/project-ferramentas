@@ -128,18 +128,27 @@ class DashboardViewSet(viewsets.ViewSet):
         return Response(data)
 
 
+# inventory/views.py
+
+# ... (outros imports e ViewSets) ...
+
 @method_decorator(csrf_exempt, name='dispatch')
 class ExportViewSet(viewsets.ViewSet):
     """
     Endpoint para exportar dados do sistema para arquivos CSV.
     """
+    # ✅ CORREÇÃO: Adicionada permissão para proteger os dados
+    permission_classes = [IsAuthenticated]
+
     def _get_tools_data(self):
         tools = Tool.objects.all()
-        # CORREÇÃO: Usando 'available_quantity' no cabeçalho e no loop
         header = 'Nome,Descrição,Quantidade Total,Quantidade Disponível,Condição,Valor Unitário,Data de Aquisição,Custo de Manutenção,Última Manutenção,Próxima Manutenção,Fornecedor\n'
         rows = []
         for tool in tools:
-            rows.append(f'"{tool.name}","{tool.description}",{tool.total_quantity},{tool.available_quantity},"{tool.get_condition_display()}",{tool.unit_value},{tool.acquisition_date},{tool.maintenance_cost},{tool.last_maintenance_date},{tool.next_maintenance_date},"{tool.supplier}"')
+            # Garante que valores nulos não quebrem a string
+            description = tool.description or ''
+            supplier = tool.supplier or ''
+            rows.append(f'"{tool.name}","{description}",{tool.total_quantity},{tool.available_quantity},"{tool.get_condition_display()}",{tool.unit_value},{tool.acquisition_date or ""},{tool.maintenance_cost or ""},{tool.last_maintenance_date or ""},{tool.next_maintenance_date or ""},"{supplier}"')
         return header + '\n'.join(rows)
 
     def _get_active_overdue_loans_data(self):

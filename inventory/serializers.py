@@ -11,7 +11,7 @@ class ToolSerializer(serializers.ModelSerializer):
     # @property do model já calcula isso, então usamos ReadOnlyField
     available_quantity = serializers.ReadOnlyField()
     borrowed_quantity = serializers.ReadOnlyField()
-
+    condition_display = serializers.CharField(source='get_condition_display', read_only=True)
     class Meta:
         model = Tool
         fields = [
@@ -23,6 +23,7 @@ class ToolSerializer(serializers.ModelSerializer):
             'borrowed_quantity',  # <-- Campo calculado
             'image',
             'condition',
+            'condition_display',
             'unit_value',
             'acquisition_date',
             'maintenance_cost',

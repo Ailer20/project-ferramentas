@@ -95,8 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="tool-card">
                     <div class="tool-card-header">
                         <img src="${tool.image || 'https://via.placeholder.com/300x180'}" alt="Imagem da Ferramenta" class="tool-image">
-                        <span class="status-badge status-${tool.condition}">${tool.condition.replace('_', ' ')}</span>
-                    </div>
+                        <span class="status-badge status-${tool.condition}">${tool.condition_display}</span>                    </div>
                     <div class="tool-card-content">
                         <h3>${tool.name}</h3>
                         <div class="tool-stats">
