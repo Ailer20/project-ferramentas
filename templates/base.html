@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ferramentaria Norte Tech{% endblock %}</title>
+    
+    <link rel="icon" href="https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.nortetech.net&amp;client=VFE&amp;size=64&amp;type=FAVICON&amp;fallback_opts=TYPE,SIZE,URL&amp;nfrp=2" type="image/png">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-tools brand-icon"></i>
+                <h3>Ferramentaria N. Tech</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="sidebar-menu">
+                    <li><a href="/dashboard"><i class="fas fa-tachometer-alt fa-fw"></i> <span>Dashboard</span></a></li>
+                    <li><a href="/manage-tools"><i class="fas fa-tools fa-fw"></i> <span>Gerenciar Ferramentas</span></a></li>
+                    <li><a href="/virtual-warehouse"><i class="fas fa-warehouse fa-fw"></i> <span>Armazém Virtual</span></a></li>
+                    <li><a href="/register-loan"><i class="fas fa-handshake fa-fw"></i> <span>Registrar Empréstimo</span></a></li>
+                    <li><a href="/active-overdue-loans"><i class="fas fa-calendar-alt fa-fw"></i> <span>Empréstimos Ativos</span></a></li>
+                    <li><a href="/history"><i class="fas fa-history fa-fw"></i> <span>Histórico</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/settings"><i class="fas fa-cog fa-fw"></i> <span>Configurações</span></a>
+                <a href="#" id="logout-button"><i class="fas fa-sign-out-alt fa-fw"></i> <span>Sair</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    {% block modals %}{% endblock %}
+
+    <script type="module" src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}
+    {% endblock %}
+
+</body>
+</html>

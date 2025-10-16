@@ -1,0 +1,142 @@
+/* static/css/active_overdue_loans.css */
+
+.active-overdue-loans-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* --- Sistema de Abas --- */
+.loan-tabs {
+    display: flex;
+    border-bottom: 1px solid #2a2a4a;
+    margin-bottom: 30px;
+}
+
+.tab-button {
+    padding: 12px 20px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #a0a0b0; /* Cor para abas inativas */
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    color: #ffffff;
+}
+
+.tab-button.active {
+    color: #ffffff; /* Cor de destaque roxa */
+    border-bottom-color: #8e2de2;
+}
+
+/* --- Seção de Busca --- */
+.search-section {
+    margin-bottom: 30px;
+}
+#loanSearch {
+    width: 100%;
+    max-width: 500px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23a0a0b0'%3E%3Cpath d='M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    background-size: 16px;
+    padding-left: 45px;
+}
+
+/* --- Lista de Cards de Empréstimo --- */
+.loan-list {
+    display: none; /* Escondido por padrão */
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+.loan-list.active {
+    display: grid; /* Mostra a lista da aba ativa */
+}
+
+/* --- Estilo Individual do Card de Empréstimo --- */
+.loan-card {
+    background-color: #1f1f3a;
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 5px solid #17a2b8; /* Borda padrão para empréstimos ativos */
+}
+.loan-card.overdue {
+    border-left-color: #dc3545; /* Borda vermelha para empréstimos atrasados */
+}
+
+.loan-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #2a2a4a;
+}
+
+.loan-card .card-header h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+.loan-card .card-header i {
+    margin-right: 10px;
+}
+
+/* Badges de Status (Ativo/Atrasado) */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 500;
+    color: white;
+}
+.status-active { background-color: #17a2b8; }
+.status-overdue { background-color: #dc3545; }
+
+.loan-card .card-content p {
+    margin: 0 0 10px 0;
+    color: #a0a0b0;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+}
+.loan-card .card-content i {
+    margin-right: 12px;
+    color: #8e2de2;
+    width: 20px; /* Alinha os ícones */
+    text-align: center;
+}
+.loan-card .card-content b {
+    color: #e0e0e0;
+}
+
+.loan-card .card-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+.return-tool-btn {
+    background: #17a2b8;
+}
+.return-tool-btn:hover {
+    background: #138496;
+    box-shadow: none;
+    transform: none;
+}
+.return-tool-btn i {
+    margin-right: 8px;
+}
+
+.no-results {
+    color: #a0a0b0;
+    text-align: center;
+    padding: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Histórico de Empréstimos{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/history.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <h1>Histórico de Empréstimos</h1>
+    <div class="search-section">
+        <input type="text" id="historySearch" placeholder="Buscar no histórico por ferramenta ou destinatário...">
+    </div>
+
+    <div id="loan-history-list" class="loan-list">
+        </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module" src="{% static 'js/history.js' %}"></script>
+{% endblock %}

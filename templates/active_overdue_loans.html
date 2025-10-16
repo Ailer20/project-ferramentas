@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Empréstimos Ativos e Atrasados{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/active_overdue_loans.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="active-overdue-loans-container">
+    <h1>Empréstimos Ativos e Atrasados</h1>
+    <div class="loan-tabs">
+        <button class="tab-button active" data-tab="active">Ativos (<span id="active-loans-count-tab">0</span>)</button>
+        <button class="tab-button" data-tab="overdue">Atrasados (<span id="overdue-loans-count-tab">0</span>)</button>
+    </div>
+    <div class="search-section">
+        <input type="text" id="loanSearch" placeholder="Buscar por nome da ferramenta ou destinatário...">
+    </div>
+
+    <div id="active-loans-list" class="loan-list active">
+        </div>
+
+    <div id="overdue-loans-list" class="loan-list">
+        </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module" src="{% static 'js/active_overdue_loans.js' %}"></script>
+{% endblock %}

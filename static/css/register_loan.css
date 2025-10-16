@@ -1,0 +1,83 @@
+/* static/css/register_loan.css */
+
+.register-loan-container {
+    animation: fadeIn 0.5s ease-out;
+    max-width: 700px; /* Limita a largura do container */
+    margin: 0 auto; /* Centraliza o container na página */
+}
+
+.loan-form-card {
+    background-color: #1f1f3a;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.loan-form-card h2 {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.loan-form-card p {
+    color: #a0a0b0;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #2a2a4a;
+    padding-bottom: 20px;
+}
+
+/* Organiza o formulário em duas colunas */
+#loanForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Faz um campo ocupar a largura total */
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Estilo para o campo de data desabilitado */
+input[readonly] {
+    background-color: #2a2a4a;
+    color: #a0a0b0;
+    cursor: not-allowed;
+}
+
+/* Botão de submit */
+#loanForm button[type="submit"] {
+    grid-column: 1 / -1; /* Ocupa a largura total */
+    margin-top: 10px;
+}
+
+/* Mensagem de sucesso ou erro */
+.message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-weight: 500;
+}
+.message.success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+.message.error {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    #loanForm {
+        grid-template-columns: 1fr; /* Volta para uma coluna */
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}

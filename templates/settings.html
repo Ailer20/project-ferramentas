@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Configurações{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <h1>Configurações</h1>
+
+    <div class="settings-section">
+        <h2>Exportar Relatórios (CSV)</h2>
+        <p>Gere relatórios completos do sistema em formato CSV, compatível com Excel e outras ferramentas de análise de dados.</p>
+        <div class="export-buttons">
+            <button id="exportToolsBtn"><i class="fas fa-download"></i> Ferramentas</button>
+            <button id="exportActiveOverdueLoansBtn"><i class="fas fa-download"></i> Empréstimos Ativos</button>
+            <button id="exportLoanHistoryBtn"><i class="fas fa-download"></i> Histórico Completo</button>
+        </div>
+    </div>
+
+    <!--<div class="settings-section">
+        <h2>Tema do Aplicativo</h2>
+        <p>Personalize a aparência do sistema. Sua preferência será salva automaticamente no seu navegador.</p>
+        <div class="theme-switcher">
+            <i class="fas fa-sun"></i>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+            <i class="fas fa-moon"></i>
+        </div>
+    </div>-->
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="module" src="{% static 'js/settings.js' %}"></script>
+{% endblock %}

@@ -9,7 +9,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    re_path(r'^$', TemplateView.as_view(template_name='index.html')),
+    re_path(r'^$', TemplateView.as_view(template_name='login.html')),
     re_path(r'^login/$', TemplateView.as_view(template_name='login.html')),
     re_path(r'^register/$', TemplateView.as_view(template_name='register.html')),
     re_path(r'^dashboard/$', TemplateView.as_view(template_name='dashboard.html')),

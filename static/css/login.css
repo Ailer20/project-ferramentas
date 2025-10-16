@@ -1,0 +1,221 @@
+/* static/css/login-style.css */
+
+/* --- Configurações Globais e de Fonte --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    /* Você pode importar a fonte no seu HTML ou aqui no CSS */
+    /* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'); */
+    font-family: 'Poppins', sans-serif;
+    background-color: #12121c; /* Fundo escuro principal */
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* --- Container Principal --- */
+.auth-wrapper {
+    width: 900px;
+    max-width: 95%;
+    height: 550px;
+    background-color: #1f1f3a; /* Fundo do card/painel */
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    overflow: hidden; /* Garante que o conteúdo respeite o border-radius */
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* --- Lado Esquerdo: Branding e Informação --- */
+.auth-brand {
+    width: 45%;
+    background: linear-gradient(45deg, #4a00e0, #8e2de2); /* Gradiente roxo/azul */
+    color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.brand-content {
+    animation: slideInFromLeft 0.7s ease-out;
+}
+
+.brand-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.auth-brand h1 {
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.auth-brand p {
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+/* --- Lado Direito: Formulário de Login --- */
+.auth-form-wrapper {
+    width: 55%;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    animation: slideInFromRight 0.7s ease-out;
+}
+
+.form-container h2 {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.form-container .subtitle {
+    color: #a0a0b0;
+    margin-bottom: 30px;
+}
+
+/* Grupo de Input com Ícone */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    transition: color 0.3s;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px 12px 45px; /* Espaço à esquerda para o ícone */
+    border: 1px solid #444;
+    background-color: #2a2a4a;
+    border-radius: 8px;
+    color: #e0e0e0;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s;
+}
+
+.input-group input::placeholder {
+    color: #888;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #8e2de2; /* Cor de destaque ao focar */
+    box-shadow: 0 0 10px rgba(142, 45, 226, 0.3);
+}
+
+.input-group input:focus + i { /* Muda a cor do ícone quando o input está em foco */
+    color: #8e2de2;
+}
+
+/* Botão de Login */
+form button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(45deg, #4a00e0, #8e2de2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+form button:hover {
+    opacity: 0.9;
+    transform: translateY(-3px); /* Efeito de elevação ao passar o mouse */
+    box-shadow: 0 8px 20px rgba(142, 45, 226, 0.3);
+}
+
+/* Rodapé do Formulário (link para registro) */
+.auth-footer {
+    margin-top: 25px;
+    font-size: 0.9em;
+    color: #a0a0b0;
+}
+
+.auth-footer a {
+    color: #8e2de2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Mensagens de erro/sucesso */
+.message {
+    margin-top: 20px;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    color: #ff8a8a; /* Cor padrão para erros */
+    background-color: rgba(255, 82, 82, 0.1);
+}
+
+/* --- Animações --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInFromLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInFromRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+
+/* --- Design Responsivo para Telas Pequenas --- */
+@media (max-width: 800px) {
+    .auth-wrapper {
+        flex-direction: column; /* Empilha os lados verticalmente */
+        height: auto;
+        max-width: 450px;
+        margin: 20px;
+    }
+
+    .auth-brand {
+        display: none; /* Em telas muito pequenas, focamos apenas no formulário */
+    }
+
+    .auth-form-wrapper {
+        width: 100%;
+        padding: 40px 25px;
+    }
+}

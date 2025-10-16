@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Armazém Virtual{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/virtual_warehouse.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="virtual-warehouse-container">
+    <h1>Armazém Virtual</h1>
+    <div class="search-section">
+        <input type="text" id="warehouseSearch" placeholder="Buscar ferramenta por nome...">
+    </div>
+
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Imagem</th>
+                    <th>Nome da Ferramenta</th>
+                    <th>Valor Unit.</th>
+                    <th>Total</th>
+                    <th>Emprestadas</th>
+                    <th>Disponíveis</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="warehouseTableBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="module" src="{% static 'js/virtual_warehouse.js' %}"></script>
+{% endblock %}

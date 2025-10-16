@@ -1,0 +1,99 @@
+/* static/css/virtual_warehouse.css */
+
+.virtual-warehouse-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* --- Seção de Busca --- */
+.search-section {
+    margin-bottom: 30px;
+}
+
+#warehouseSearch {
+    width: 100%;
+    max-width: 500px; /* Limita a largura da busca */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23a0a0b0'%3E%3Cpath d='M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    background-size: 16px;
+    padding-left: 45px;
+}
+
+/* --- Tabela de Dados --- */
+.table-responsive {
+    overflow-x: auto; /* Garante que a tabela não quebre o layout em telas pequenas */
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1f1f3a;
+    border-radius: 12px;
+    overflow: hidden; /* Garante que o border-radius seja aplicado nas bordas */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #2a2a4a;
+    vertical-align: middle;
+}
+
+.data-table thead {
+    background-color: #2a2a4a;
+}
+
+.data-table th {
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+.data-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+    background-color: #2a2a4a;
+}
+
+.data-table tbody td {
+    color: #a0a0b0;
+}
+
+.data-table tbody td strong {
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+.tool-table-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #2a2a4a;
+}
+
+/* Badges de Status */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+.status-good { background-color: #28a745; color: white; }
+.status-new { background-color: #007bff; color: white; }
+.status-recovered { background-color: #17a2b8; color: white; }
+.status-maintenance { background-color: #ffc107; color: #12121c; }
+
+/* Animação */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}

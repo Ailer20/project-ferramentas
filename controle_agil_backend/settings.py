@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-p-_meaq_o&890-e_^ncav3j#r(dp8j(h*y%wii+uvh!^t8j!$9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -61,7 +61,7 @@ ROOT_URLCONF = 'controle_agil_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,11 +117,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "null", # Para acesso via file://
-]
+
 
 CORS_ALLOW_ALL_ORIGINS = True # Temporário para desenvolvimento, ajustar para produção
 
@@ -192,7 +188,8 @@ AUTH_USER_MODEL = 'users.User'
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'frontend',
+    BASE_DIR / 'static',
+    # BASE_DIR / 'frontend',
 ]
 
 

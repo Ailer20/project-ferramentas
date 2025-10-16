@@ -1,0 +1,154 @@
+/* static/css/dashboard.css */
+
+/* --- Estilos Específicos do Dashboard --- */
+
+.dashboard-container {
+    animation: fadeIn 0.5s ease-out; /* Animação suave de entrada */
+}
+
+/* Seção de Alerta */
+.alert-section {
+    margin-bottom: 30px;
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border-left: 5px solid;
+}
+
+.alert.alert-warning, .alert.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1); /* Fundo vermelho bem claro */
+    border-color: #dc3545; /* Borda esquerda vermelha */
+    color: #f5c6cb;
+}
+
+.alert i {
+    font-size: 1.5em;
+    margin-right: 15px;
+}
+
+.alert h4 {
+    margin: 0 0 5px 0;
+    font-weight: bold;
+}
+
+.alert p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.alert a {
+    color: #f5c6cb;
+    font-weight: 600;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.alert a:hover {
+    color: #ffffff;
+}
+
+/* Grid de Cards */
+.dashboard-cards {
+    display: grid;
+    /* Layout padrão de 3 colunas para telas de desktop */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+/* Card de largura total (se for usado) */
+.card.card-full-width {
+    grid-column: 1 / -1;
+}
+
+
+/* Estilo Individual dos Cards do Dashboard */
+.dashboard-cards .card {
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-cards .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-cards .card-icon {
+    font-size: 2.5em;
+    margin-right: 20px;
+    color: #8e2de2; /* Cor padrão do ícone (gradiente roxo) */
+}
+
+.dashboard-cards .card-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #a0a0b0; /* Cinza claro para o título */
+}
+
+.dashboard-cards .card-content p {
+    margin: 0;
+    font-size: 1.8em; /* Tamanho grande para o número */
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.dashboard-cards .card-content .sub-info {
+    font-size: 0.8em;
+    color: #a0a0b0;
+    font-weight: 400;
+    margin-top: 5px;
+}
+
+/* Cores Específicas para cada Ícone */
+.dashboard-cards .card:nth-child(1) .card-icon { color: #8e2de2; } /* Total de Ferramentas (Roxo) */
+.dashboard-cards .card:nth-child(2) .card-icon { color: #17a2b8; } /* Empréstimos Ativos (Azul Ciano) */
+.dashboard-cards .card:nth-child(3) .card-icon { color: #ffc107; } /* Empréstimos Atrasados (Amarelo) */
+.dashboard-cards .card:nth-child(4) .card-icon { color: #20c997; } /* Disponível (Verde Água) */
+.dashboard-cards .card:nth-child(5) .card-icon { color: #fd7e14; } /* Manutenção (Laranja) */
+.dashboard-cards .card:nth-child(6) .card-icon { color: #007bff; } /* Custo (Azul) */
+.dashboard-cards .card:nth-child(7) .card-icon { color: #28a745; } /* Valor do Inventário (Verde) */
+
+/* Classe de Perigo para o Card de Atrasados (será adicionada via JS) */
+.dashboard-cards .card.card-danger .card-icon,
+.dashboard-cards .card.card-danger .card-content p {
+    color: #dc3545; /* Vermelho */
+}
+
+/* --- Design Responsivo para o Dashboard --- */
+
+/* Telas de Tablet */
+@media (max-width: 1200px) {
+    .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+    }
+}
+
+/* Telas de Celular */
+@media (max-width: 768px) {
+    .dashboard-cards {
+        grid-template-columns: 1fr; /* 1 coluna */
+    }
+    .dashboard-container h1 {
+        font-size: 1.8em;
+    }
+    .dashboard-cards .card-content p {
+        font-size: 1.6em;
+    }
+}
+
+/* --- Animação de Entrada --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

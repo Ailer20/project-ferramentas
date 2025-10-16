@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerenciar Ferramentas{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/manage_tools.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="manage-tools-container">
+    <h1>Gerenciamento de Ferramentas</h1>
+    <div class="search-add-section">
+        <input type="text" id="toolSearch" placeholder="Buscar ferramentas por nome...">
+        <button id="addNewToolBtn"><i class="fas fa-plus"></i> Adicionar Nova Ferramenta</button>
+    </div>
+
+    <div class="tool-cards-container" id="toolCardsContainer">
+        </div>
+</div>
+{% endblock %}
+
+
+{% block modals %}
+<div id="toolModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Adicionar Nova Ferramenta</h2>
+            <span class="close-button">&times;</span>
+        </div>
+        
+        <form id="toolForm">
+            <fieldset>
+                <legend>Informações Principais</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="toolName">Nome da Ferramenta</label>
+                        <input type="text" id="toolName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="toolSupplier">Fornecedor</label>
+                        <input type="text" id="toolSupplier" name="supplier">
+                    </div>
+                    <div class="form-group form-group-full-width">
+                        <label for="toolDescription">Descrição</label>
+                        <textarea id="toolDescription" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Estoque e Condição</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="toolCondition">Condição</label>
+                        <select id="toolCondition" name="condition">
+                            <option value="good">Boa Condição</option>
+                            <option value="new">Novo</option>
+                            <option value="recovered">Recuperada</option>
+                            <option value="maintenance">Em Manutenção</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toolTotalQuantity">Quantidade Total</label>
+                        <input type="number" id="toolTotalQuantity" name="total_quantity" min="0" value="1" required>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Detalhes Financeiros</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="toolUnitValue">Valor Unitário (R$)</label>
+                        <input type="number" id="toolUnitValue" name="unit_value" step="0.01" value="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="toolMaintenanceCost">Custo de Manutenção (R$)</label>
+                        <input type="number" id="toolMaintenanceCost" name="maintenance_cost" step="0.01" value="0.00">
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Datas Relevantes</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="toolAcquisitionDate">Data de Aquisição</label>
+                        <input type="date" id="toolAcquisitionDate" name="acquisition_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="toolLastMaintenanceDate">Última Manutenção</label>
+                        <input type="date" id="toolLastMaintenanceDate" name="last_maintenance_date">
+                    </div>
+                    <div class="form-group form-group-full-width">
+                        <label for="toolNextMaintenanceDate">Próxima Manutenção</label>
+                        <input type="date" id="toolNextMaintenanceDate" name="next_maintenance_date">
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-group form-group-full-width">
+                <label>Imagem da Ferramenta (Opcional)</label>
+                
+                <div class="file-input-wrapper">
+                    <input type="file" id="toolImage" name="image" accept="image/*">
+                    
+                    <label for="toolImage" class="file-input-label">
+                        <i class="fas fa-upload"></i>
+                        <span>Escolher arquivo</span>
+                    </label>
+                    
+                    <span id="fileName" class="file-name">Nenhum arquivo escolhido</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="submitBtn">Salvar Ferramenta</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock modals %}
+
+
+{% block extra_js %}
+<script type="module" src="{% static 'js/manage_tools.js' %}"></script>
+{% endblock extra_js %}

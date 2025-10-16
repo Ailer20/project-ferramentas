@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.utils import timezone
 
 class Tool(models.Model):
@@ -12,8 +13,7 @@ class Tool(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     total_quantity = models.IntegerField(default=0)
-    available_for_loan = models.IntegerField(default=0) # Quantidade disponível para empréstimo
-    image = models.ImageField(upload_to='tool_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='tool_images/', max_length=300, blank=True, null=True)
     condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='good')
     unit_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     acquisition_date = models.DateField(blank=True, null=True)
@@ -23,12 +23,14 @@ class Tool(models.Model):
     supplier = models.CharField(max_length=255, blank=True, null=True)
 
     @property
-    def available_quantity(self):
-        return self.total_quantity - self.loan_set.filter(returned_date__isnull=True).count()
+    def borrowed_quantity(self):
+        # Isto SOMA corretamente a quantidade de todos os empréstimos ativos
+        result = self.loan_set.filter(returned_date__isnull=True).aggregate(total=Sum('quantity'))
+        return result['total'] or 0
 
     @property
-    def borrowed_quantity(self):
-        return self.loan_set.filter(returned_date__isnull=True).count()
+    def available_quantity(self):
+        return self.total_quantity - self.borrowed_quantity
 
     def __str__(self):
         return self.name
