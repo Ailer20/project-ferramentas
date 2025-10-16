@@ -1,0 +1,63 @@
+/* static/css/analytics.css */
+
+.analytics-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.chart-card {
+    background-color: #1f1f3a;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* ✅ CORREÇÃO: Permite que o chart-container use flexbox se necessário */
+    display: flex;
+    flex-direction: column;
+}
+
+body:not(.dark-theme) .chart-card {
+    background-color: #FFFFFF;
+    border: 1px solid #e0e0e0;
+}
+
+.chart-card.chart-card-large {
+    grid-column: 1 / -1;
+}
+
+.chart-card h2 {
+    font-size: 1.3em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #2a2a4a;
+    flex-shrink: 0; /* Impede que o título encolha */
+}
+body:not(.dark-theme) .chart-card h2 {
+    border-bottom-color: #e0e0e0;
+}
+
+/* --- ✅ A CORREÇÃO PRINCIPAL ESTÁ AQUI ✅ --- */
+/* Esta nova regra cria a "caixa" com tamanho definido para o gráfico */
+.chart-container {
+    position: relative;
+    height: 400px; /* Altura fixa para o gráfico */
+    width: 100%;
+    flex-grow: 1; /* Permite que o container cresça para preencher o espaço do card */
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}

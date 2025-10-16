@@ -12,6 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
 from .models import Tool, Loan
 from .serializers import ToolSerializer, LoanSerializer
+from django.db.models import Count, Sum, F
+from django.db.models.functions import TruncMonth
 
 # Isenta o CSRF para permitir testes via Postman/APIs, mas em produção,
 # a autenticação por token (como JWT) é o ideal.
@@ -188,3 +190,46 @@ class ExportViewSet(viewsets.ViewSet):
         response['Content-Disposition'] = 'attachment; filename="historico_emprestimos.csv"'
         response.write(self._get_loan_history_data())
         return response
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class AnalyticsViewSet(viewsets.ViewSet):
+    """
+    Endpoint da API para fornecer dados para os gráficos de análise.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        # 1. Ferramentas por Condição (Gráfico de Pizza)
+        tools_by_condition = Tool.objects.values('condition').annotate(count=Count('id')).order_by('condition')
+        
+        # 2. Valor Total do Inventário por Ferramenta (Gráfico de Barras)
+        inventory_value = Tool.objects.annotate(
+            total_value=F('total_quantity') * F('unit_value')
+        ).values('name', 'total_value').order_by('-total_value')[:10] # Top 10 mais valiosas
+
+        # 3. Custos de Manutenção por Mês (Gráfico de Linha)
+        maintenance_costs = Tool.objects.filter(last_maintenance_date__isnull=False).annotate(
+            month=TruncMonth('last_maintenance_date')
+        ).values('month').annotate(
+            total_cost=Sum('maintenance_cost')
+        ).order_by('month')
+
+        # 4. Empréstimos por Mês (Gráfico de Barras)
+        loan_activity = Loan.objects.annotate(
+            month=TruncMonth('borrowed_date')
+        ).values('month').annotate(
+            count=Count('id')
+        ).order_by('month')
+
+        # Monta a resposta da API
+        data = {
+            'tools_by_condition': list(tools_by_condition),
+            'inventory_value_by_tool': list(inventory_value),
+            'maintenance_cost_over_time': [
+                {'month': entry['month'].strftime('%Y-%m'), 'total_cost': entry['total_cost']} for entry in maintenance_costs
+            ],
+            'loan_activity': [
+                {'month': entry['month'].strftime('%Y-%m'), 'count': entry['count']} for entry in loan_activity
+            ],
+        }
+        return Response(data)
