@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Gerenciar Ferramentas{% endblock %}
+
+{% block content %}
+<div class="manage-tools-container">
+    <h1>Gerenciamento de Ferramentas</h1>
+    <div class="search-add-section">
+        <input type="text" id="toolSearch" placeholder="Buscar ferramentas por nome ou descrição...">
+        <button id="addNewToolBtn"><i class="fas fa-plus"></i> Adicionar Nova Ferramenta</button>
+    </div>
+
+    <div class="tool-cards-container" id="toolCardsContainer">
+        <!-- Tool cards will be loaded here by JavaScript -->
+    </div>
+
+    <!-- Modal para Adicionar/Editar Ferramenta -->
+    <div id="toolModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Adicionar Nova Ferramenta</h2>
+            <form id="toolForm">
+                <div class="form-group">
+                    <label for="toolName">Nome da Ferramenta</label>
+                    <input type="text" id="toolName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="toolDescription">Descrição</label>
+                    <textarea id="toolDescription" name="description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="toolCondition">Condição</label>
+                    <select id="toolCondition" name="condition">
+                        <option value="good">Boa Condição</option>
+                        <option value="new">Novo</option>
+                        <option value="recovered">Recuperada</option>
+                        <option value="maintenance">Em Manutenção</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="toolTotalQuantity">Quantidade Total</label>
+                    <input type="number" id="toolTotalQuantity" name="total_quantity" min="0" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="toolUnitValue">Valor Unitário da Ferramenta (R$)</label>
+                    <input type="number" id="toolUnitValue" name="unit_value" step="0.01" value="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="toolAcquisitionDate">Data de Aquisição</label>
+                    <input type="date" id="toolAcquisitionDate" name="acquisition_date">
+                </div>
+                <div class="form-group">
+                    <label for="toolMaintenanceCost">Custo de Manutenção (R$)</label>
+                    <input type="number" id="toolMaintenanceCost" name="maintenance_cost" step="0.01" value="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="toolLastMaintenanceDate">Última Manutenção</label>
+                    <input type="date" id="toolLastMaintenanceDate" name="last_maintenance_date">
+                </div>
+                <div class="form-group">
+                    <label for="toolNextMaintenanceDate">Próxima Manutenção</label>
+                    <input type="date" id="toolNextMaintenanceDate" name="next_maintenance_date">
+                </div>
+                <div class="form-group">
+                    <label for="toolSupplier">Fornecedor</label>
+                    <input type="text" id="toolSupplier" name="supplier">
+                </div>
+                <div class="form-group">
+                    <label for="toolImage">Imagem da Ferramenta (Opcional)</label>
+                    <input type="file" id="toolImage" name="image" accept="image/*">
+                </div>
+                <button type="submit">Adicionar Ferramenta</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/manage_tools.js"></script>
+{% endblock %}
