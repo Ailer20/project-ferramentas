@@ -31,9 +31,19 @@ class Tool(models.Model):
     @property
     def available_quantity(self):
         return self.total_quantity - self.borrowed_quantity
+    class Meta:
+            permissions = [
+                ("dashboard", "Pode ver o Dashboard"),
+                ("manage_tools", "Pode ver a página Gerenciar Ferramentas"),
+                ("virtual_warehouse", "Pode ver o Armazém Virtual"),
+                ("register_loan", "Pode ver a página Registrar Empréstimo"),
+                ("active_loans", "Pode ver a página Empréstimos Ativos"),
+                ("history", "Pode ver o Histórico de Empréstimos"),
+                ("analytics", "Pode ver a página de Análise e Relatórios"),
+            ]
 
     def __str__(self):
-        return self.name
+            return self.name
 
 class Loan(models.Model):
     tool = models.ForeignKey(Tool, on_delete=models.CASCADE)

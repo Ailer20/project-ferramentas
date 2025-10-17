@@ -4,9 +4,9 @@ from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-
+from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer
-
+from .serializers import UserSerializer, UserDetailSerializer # Importe o novo serializer
 User = get_user_model()
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -21,4 +21,8 @@ class UserViewSet(viewsets.ModelViewSet):
             user = serializer.save()
             return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+# ✅ ADICIONE ESTA ACTION PARA O ENDPOINT /api/users/me/
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        serializer = UserDetailSerializer(request.user)
+        return Response(serializer.data)
