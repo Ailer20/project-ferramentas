@@ -105,6 +105,13 @@
 
             <div class="form-group form-group-full-width">
                 <label>Imagem da Ferramenta (Opcional)</label>
+
+                <div id="imagePreviewContainer" style="display: none; margin-bottom: 10px; text-align: center;">
+                    <img id="currentToolImage" src="" alt="Imagem Atual" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover; border: 2px solid #ddd;">
+                    <small style="display: block; color: #a0a0b0; margin-top: 5px;">
+                        Imagem atual. Escolha um novo arquivo abaixo para substituí-la.
+                    </small>
+                </div>
                 <div class="file-input-wrapper">
                     <input type="file" id="toolImage" name="image" accept="image/*">
                     <label for="toolImage" class="file-input-label">
@@ -112,7 +119,7 @@
                         <span>Escolher arquivo</span>
                     </label>
                     <span id="fileName" class="file-name">Nenhum arquivo escolhido</span>
-                </div>
+                </div> 
             </div>
 
             <div class="form-actions">

@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const toolConditionSelect = document.getElementById('toolCondition');
     const toolTotalQuantityInput = document.getElementById('toolTotalQuantity');
     const quantityHelpText = document.getElementById('quantityHelpText');
-    
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const currentToolImage = document.getElementById('currentToolImage');
     let allTools = []; // Array para guardar todas as ferramentas
     let editingToolId = null; // Guarda o ID da ferramenta sendo editada
 
@@ -47,49 +48,73 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Funções do Modal ---
     function openModalForNew() {
-        editingToolId = null;
-        modalTitle.textContent = "Adicionar Nova Ferramenta";
-        submitBtn.textContent = "Salvar Ferramenta";
-        toolForm.reset();
-        fileNameSpan.textContent = 'Nenhum arquivo escolhido';
-        // Garante que o campo de quantidade esteja editável
-        toolTotalQuantityInput.readOnly = false;
-        quantityHelpText.style.display = 'none';
-        toolModal.classList.add('show');
-    }
+        editingToolId = null;
+        modalTitle.textContent = "Adicionar Nova Ferramenta";
+        submitBtn.textContent = "Salvar Ferramenta";
+        toolForm.reset();
+        fileNameSpan.textContent = 'Nenhum arquivo escolhido';
+        
+        // Garante que o campo de quantidade esteja editável
+        toolTotalQuantityInput.readOnly = false;
+        quantityHelpText.style.display = 'none';
+
+        // NOVO: Garante que o preview da imagem esteja escondido
+        imagePreviewContainer.style.display = 'none';
+        currentToolImage.src = '';
+
+        toolModal.classList.add('show');
+    }
     
     function openModalForEdit(tool) {
-        editingToolId = tool.id;
-        modalTitle.textContent = "Editar Ferramenta";
-        submitBtn.textContent = "Atualizar Ferramenta";
-        
-        toolForm.name.value = tool.name;
-        toolForm.description.value = tool.description || '';
-        toolForm.condition.value = tool.condition;
-        toolForm.total_quantity.value = tool.total_quantity;
-        toolForm.unit_value.value = tool.unit_value;
-        toolForm.acquisition_date.value = tool.acquisition_date || '';
-        toolForm.maintenance_cost.value = tool.maintenance_cost || '0.00';
-        toolForm.last_maintenance_date.value = tool.last_maintenance_date || '';
-        toolForm.next_maintenance_date.value = tool.next_maintenance_date || '';
-        toolForm.supplier.value = tool.supplier || '';
-        fileNameSpan.textContent = 'Nenhum arquivo escolhido';
-        
-        // Aplica a lógica de manutenção ao abrir para editar
-        if (tool.condition === 'maintenance') {
-            toolTotalQuantityInput.readOnly = true;
-            quantityHelpText.style.display = 'block';
-        } else {
-            toolTotalQuantityInput.readOnly = false;
-            quantityHelpText.style.display = 'none';
-        }
+        editingToolId = tool.id;
+        modalTitle.textContent = "Editar Ferramenta";
+        submitBtn.textContent = "Atualizar Ferramenta";
+        
+        // Limpa o form antes de preencher
+        toolForm.reset(); 
 
-        toolModal.classList.add('show');
-    }
+        // Preenche os campos
+        toolForm.name.value = tool.name;
+        toolForm.description.value = tool.description || '';
+        toolForm.condition.value = tool.condition;
+        toolForm.total_quantity.value = tool.total_quantity;
+        toolForm.unit_value.value = tool.unit_value;
+        toolForm.acquisition_date.value = tool.acquisition_date || '';
+        toolForm.maintenance_cost.value = tool.maintenance_cost || '0.00';
+        toolForm.last_maintenance_date.value = tool.last_maintenance_date || '';
+        toolForm.next_maintenance_date.value = tool.next_maintenance_date || '';
+        toolForm.supplier.value = tool.supplier || '';
+        fileNameSpan.textContent = 'Nenhum arquivo escolhido';
+
+        // NOVO: Lógica para exibir a imagem atual
+        if (tool.image) {
+            currentToolImage.src = tool.image;
+            imagePreviewContainer.style.display = 'block';
+        } else {
+            imagePreviewContainer.style.display = 'none';
+            currentToolImage.src = '';
+        }
+        
+        // Aplica a lógica de manutenção
+        if (tool.condition === 'maintenance') {
+            toolTotalQuantityInput.readOnly = true;
+            quantityHelpText.style.display = 'block';
+        } else {
+            toolTotalQuantityInput.readOnly = false;
+            quantityHelpText.style.display = 'none';
+        }
+
+        toolModal.classList.add('show');
+    }
     
     function closeModal() {
-        toolModal.classList.remove('show');
-    }
+        toolModal.classList.remove('show');
+        
+        // NOVO: Limpa o preview ao fechar o modal
+        imagePreviewContainer.style.display = 'none';
+        currentToolImage.src = '';
+        toolForm.reset(); // Também é uma boa prática resetar o form aqui
+    }
 
     // --- Funções de Renderização e API ---
     function renderTools(toolsToRender) {
@@ -134,27 +159,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function handleFormSubmit(event) {
-        event.preventDefault();
-        
-        const formData = new FormData(toolForm);
-        // Se a quantidade foi desabilitada, reabilita antes de enviar para garantir que o valor seja incluído
-        toolTotalQuantityInput.readOnly = false;
+        event.preventDefault();
+        
+        // NÃO FAÇA: const formData = new FormData(toolForm);
+        // ISSO CAUSA O BUG de apagar a imagem.
 
-        const url = editingToolId ? `/api/tools/${editingToolId}/` : '/api/tools/';
-        const method = editingToolId ? 'PATCH' : 'POST';
+        // FAÇA ASSIM: Crie o FormData manualmente
+        const formData = new FormData();
 
-        const response = await fetchWithAuth(url, { method: method, body: formData });
+        // Adicione os campos de texto/número/select
+        formData.append('name', toolForm.name.value);
+        formData.append('supplier', toolForm.supplier.value || '');
+        formData.append('description', toolForm.description.value || '');
+        formData.append('condition', toolForm.condition.value);
+        formData.append('total_quantity', toolForm.total_quantity.value);
+        formData.append('unit_value', toolForm.unit_value.value);
+        formData.append('maintenance_cost', toolForm.maintenance_cost.value || '0.00');
+        
+        // Adicione as datas APENAS se elas tiverem valor
+        if (toolForm.acquisition_date.value) {
+            formData.append('acquisition_date', toolForm.acquisition_date.value);
+        }
+        if (toolForm.last_maintenance_date.value) {
+            formData.append('last_maintenance_date', toolForm.last_maintenance_date.value);
+        }
+        if (toolForm.next_maintenance_date.value) {
+            formData.append('next_maintenance_date', toolForm.next_maintenance_date.value);
+        }
 
-        if (response && response.ok) {
-            closeModal();
-            fetchTools();
-        } else {
-            const errorData = await response.json();
-            // Transforma o erro da API em uma mensagem legível
-            const errorMessage = Object.entries(errorData).map(([key, value]) => `${key}: ${value.join(', ')}`).join('\n');
-            alert(`Erro ao salvar:\n${errorMessage}`);
-        }
-    }
+        // LÓGICA CRÍTICA DA IMAGEM:
+        // Adicione a imagem APENAS se um novo arquivo foi selecionado
+        if (toolImageInput.files.length > 0) {
+            formData.append('image', toolImageInput.files[0]);
+        }
+        // Se nenhum arquivo novo foi selecionado, o campo 'image' não é enviado.
+        // Ao usar 'PATCH', o backend simplesmente não alterará a imagem existente.
+
+        // Se a quantidade foi desabilitada, reabilita antes de enviar
+        toolTotalQuantityInput.readOnly = false;
+
+        const url = editingToolId ? `/api/tools/${editingToolId}/` : '/api/tools/';
+        const method = editingToolId ? 'PATCH' : 'POST';
+
+        const response = await fetchWithAuth(url, { method: method, body: formData });
+
+        if (response && response.ok) {
+            closeModal();
+            fetchTools();
+        } else {
+            const errorData = await response.json();
+            const errorMessage = Object.entries(errorData).map(([key, value]) => `${key}: ${value.join(', ')}`).join('\n');
+            alert(`Erro ao salvar:\n${errorMessage}`);
+        }
+    }
     
     // --- Adicionando Event Listeners ---
     addNewToolBtn.addEventListener('click', openModalForNew);
@@ -178,10 +235,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Lógica do input de arquivo customizado
     toolImageInput.addEventListener('change', () => {
-        fileNameSpan.textContent = toolImageInput.files.length > 0
-            ? toolImageInput.files[0].name
-            : 'Nenhum arquivo escolhido';
-    });
+        if (toolImageInput.files.length > 0) {
+            fileNameSpan.textContent = toolImageInput.files[0].name;
+            // NOVO: Esconde o preview da imagem antiga, pois uma nova foi selecionada
+            imagePreviewContainer.style.display = 'none';
+        } else {
+            fileNameSpan.textContent = 'Nenhum arquivo escolhido';
+        }
+    });
 
     // Barra de busca
     toolSearch.addEventListener('input', (event) => {
