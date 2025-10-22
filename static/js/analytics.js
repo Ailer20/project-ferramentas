@@ -3,12 +3,10 @@ import { refreshToken } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Variables to hold the chart instances
+    // Variáveis para guardar as instâncias dos gráficos
     let toolsByConditionChart, inventoryValueChart, maintenanceCostChart, loanActivityChart, maintenancesPerMonthChart;
 
-    // --- Helper Functions ---
-
-    // Handles authenticated API requests
+    // Função para requisições autenticadas
     async function fetchWithAuth(url, options = {}) {
         options.headers = { ...options.headers, 'Authorization': `Bearer ${localStorage.getItem('access_token')}` };
         let response = await fetch(url, options);
@@ -17,34 +15,34 @@ document.addEventListener("DOMContentLoaded", () => {
             if (refreshed) {
                 options.headers['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
                 response = await fetch(url, options);
-            } else {
-                window.location.href = "/login";
-                return null;
-            }
+            } else { window.location.href = "/login"; return null; }
         }
         return response;
     }
     
-    // --- Main Function to Load and Render Charts ---
-    
+    // Função principal para carregar e renderizar os gráficos
     async function loadAnalytics() {
         const response = await fetchWithAuth('/api/analytics/');
         if (!response || !response.ok) {
-            console.error("Failed to fetch analytics data.");
+            console.error("Falha ao buscar dados de análise.");
             return;
         }
         const data = await response.json();
 
-        // --- Chart Configuration based on Theme ---
+        // ✅ --- CORREÇÃO PRINCIPAL: Definir Cores Padrão Globalmente --- ✅
         const isDarkMode = document.body.classList.contains('dark-theme');
-        const textColor = isDarkMode ? '#a0a0b0' : '#737373';
-        const gridColor = isDarkMode ? 'rgba(160, 160, 176, 0.1)' : 'rgba(115, 115, 115, 0.1)';
-        const legendColor = isDarkMode ? '#e0e0e0' : '#081E26';
+        const legendAndTextColor = isDarkMode ? '#ffffffff' : '#ffffffff'; // Branco para escuro, Preto para claro
+        const gridLineColor = isDarkMode ? 'rgba(160, 160, 176, 0.1)' : 'rgba(115, 115, 115, 0.1)';
+
+        // Aplica as cores a TODOS os gráficos que serão criados
+        Chart.defaults.color = legendAndTextColor;
+        Chart.defaults.borderColor = gridLineColor;
+        // Fim da correção principal
 
         const conditionLabels = { 'good': 'Boa Condição', 'new': 'Novo', 'recovered': 'Recuperada', 'maintenance': 'Em Manutenção' };
         const chartColors = ['#28a745', '#007bff', '#17a2b8', '#dc3545', '#ffc107'];
 
-        // --- 1. Tools by Condition Chart (Doughnut) ---
+        // --- 1. Gráfico de Ferramentas por Condição (Pizza) ---
         if (toolsByConditionChart) toolsByConditionChart.destroy();
         toolsByConditionChart = new Chart(document.getElementById('toolsByConditionChart'), {
             type: 'doughnut',
@@ -57,14 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     borderColor: isDarkMode ? '#1f1f3a' : '#FFFFFF',
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: legendColor } } }
-            }
+            // As opções de cores agora são herdadas do Chart.defaults
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // --- 2. Inventory Value Chart (Bar) ---
+        // --- 2. Gráfico de Valor do Inventário (Barras) ---
         if (inventoryValueChart) inventoryValueChart.destroy();
         inventoryValueChart = new Chart(document.getElementById('inventoryValueChart'), {
             type: 'bar',
@@ -76,16 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     backgroundColor: '#4a00e0',
                 }]
             },
-            options: {
-                indexAxis: 'y', // Horizontal bars
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
-                plugins: { legend: { labels: { color: legendColor } } }
-            }
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
         });
 
-        // --- 3. Maintenance Cost Chart (Line) ---
+        // --- 3. Gráfico de Custos de Manutenção (Linha) ---
         if (maintenanceCostChart) maintenanceCostChart.destroy();
         maintenanceCostChart = new Chart(document.getElementById('maintenanceCostChart'), {
             type: 'line',
@@ -100,15 +89,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.2
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
-                plugins: { legend: { labels: { color: legendColor } } }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // --- 4. Loan Activity Chart (Bar) ---
+        // --- 4. Gráfico de Atividade de Empréstimos (Barras) ---
         if (loanActivityChart) loanActivityChart.destroy();
         loanActivityChart = new Chart(document.getElementById('loanActivityChart'), {
             type: 'bar',
@@ -120,15 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     backgroundColor: '#17a2b8',
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
-                plugins: { legend: { labels: { color: legendColor } } }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // --- 5. Maintenances per Month Chart (Bar) ---
+        // --- 5. Gráfico de Quantidade de Manutenções (Barras) ---
         if (maintenancesPerMonthChart) maintenancesPerMonthChart.destroy();
         maintenancesPerMonthChart = new Chart(document.getElementById('maintenancesPerMonthChart'), {
             type: 'bar',
@@ -137,18 +116,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 datasets: [{
                     label: 'Nº de Manutenções',
                     data: data.maintenances_per_month.map(item => item.count),
-                    backgroundColor: '#ffc107', // Maintenance yellow color
+                    backgroundColor: '#ffc107',
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } },
-                plugins: { legend: { labels: { color: legendColor } } }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
 
-    // --- Initial Load ---
+    // --- Carga Inicial ---
     loadAnalytics();
 });

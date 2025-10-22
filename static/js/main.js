@@ -30,13 +30,19 @@ export async function refreshToken() {
     }
 }
 
-// Aplica o tema salvo antes mesmo da página carregar completamente
+
+// --- Lógica Principal que Roda em Todas as Páginas ---
+
+// ✅ CORREÇÃO APLICADA AQUI ✅
+// Agora, o tema claro é o padrão. O tema escuro só é ativado
+// se estiver explicitamente salvo como 'dark' no localStorage.
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme === 'dark') {
     document.body.classList.add('dark-theme');
 } else {
     document.body.classList.remove('dark-theme');
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -52,16 +58,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- LÓGICA DE MENU DINÂMICO ---
     const menuItems = [
-        { href: '/dashboard/', icon: 'fa-tachometer-alt', text: 'Dashboard', permission: 'inventory.view_dashboard' },
-        { href: '/manage-tools/', icon: 'fa-tools', text: 'Gerenciar Ferramentas', permission: 'inventory.view_manage_tools' },
-        { href: '/virtual-warehouse/', icon: 'fa-warehouse', text: 'Armazém Virtual', permission: 'inventory.view_virtual_warehouse' },
-        { href: '/register-loan/', icon: 'fa-handshake', text: 'Registrar Empréstimo', permission: 'inventory.view_register_loan' },
-        { href: '/active-overdue-loans/', icon: 'fa-calendar-alt', text: 'Empréstimos Ativos', permission: 'inventory.view_active_loans' },
-        { href: '/history/', icon: 'fa-history', text: 'Histórico', permission: 'inventory.view_history' },
-        { href: '/analytics/', icon: 'fa-chart-pie', text: 'Análise', permission: 'inventory.view_analytics' }
+        { href: '/dashboard/', icon: 'fa-tachometer-alt', text: 'Dashboard', permission: 'inventory.dashboard' },
+        { href: '/manage-tools/', icon: 'fa-tools', text: 'Gerenciar Ferramentas', permission: 'inventory.manage_tools' },
+        { href: '/virtual-warehouse/', icon: 'fa-warehouse', text: 'Armazém Virtual', permission: 'inventory.virtual_warehouse' },
+        { href: '/register-loan/', icon: 'fa-handshake', text: 'Registrar Empréstimo', permission: 'inventory.register_loan' },
+        { href: '/active-overdue-loans/', icon: 'fa-calendar-alt', text: 'Empréstimos Ativos', permission: 'inventory.active_loans' },
+        { href: '/history/', icon: 'fa-history', text: 'Histórico', permission: 'inventory.history' },
+        { href: '/analytics/', icon: 'fa-chart-pie', text: 'Análise', permission: 'inventory.analytics' }
     ];
 
-    // ✅ CORREÇÃO 1: A função agora espera o objeto 'user' completo
     function buildSidebarMenu(user) {
         const menuContainer = document.getElementById('sidebar-menu');
         if (!menuContainer) return;
@@ -69,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const permissionsSet = new Set(user.permissions);
 
         menuItems.forEach(item => {
-            // ✅ CORREÇÃO 2: A verificação 'user.is_superuser' agora funciona
             if (user.is_superuser || permissionsSet.has(item.permission)) {
                 const li = document.createElement('li');
                 const a = document.createElement('a');
@@ -102,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 const user = await response.json();
-                // ✅ CORREÇÃO 3: Passamos o objeto 'user' completo para a função
                 buildSidebarMenu(user);
             } else if (response.status === 401) {
                 const refreshed = await refreshToken();

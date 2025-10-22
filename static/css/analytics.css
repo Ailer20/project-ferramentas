@@ -10,19 +10,15 @@
     gap: 25px;
 }
 
+/* --- ESTILOS PARA O TEMA ESCURO (PADRÃO) --- */
+
 .chart-card {
-    background-color: #1f1f3a;
+    background-color: #1f1f3a; /* Fundo do card escuro */
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    /* ✅ CORREÇÃO: Permite que o chart-container use flexbox se necessário */
     display: flex;
     flex-direction: column;
-}
-
-body:not(.dark-theme) .chart-card {
-    background-color: #FFFFFF;
-    border: 1px solid #e0e0e0;
 }
 
 .chart-card.chart-card-large {
@@ -34,23 +30,20 @@ body:not(.dark-theme) .chart-card {
     font-weight: 600;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #2a2a4a;
-    flex-shrink: 0; /* Impede que o título encolha */
-}
-body:not(.dark-theme) .chart-card h2 {
-    border-bottom-color: #e0e0e0;
+    border-bottom: 1px solid #2a2a4a; /* Borda escura */
+    flex-shrink: 0;
+    /* A cor do título (h2) já é herdada do style.css principal */
 }
 
-/* --- ✅ A CORREÇÃO PRINCIPAL ESTÁ AQUI ✅ --- */
-/* Esta nova regra cria a "caixa" com tamanho definido para o gráfico */
 .chart-container {
     position: relative;
-    height: 400px; /* Altura fixa para o gráfico */
+    height: 400px;
     width: 100%;
-    flex-grow: 1; /* Permite que o container cresça para preencher o espaço do card */
+    flex-grow: 1;
 }
 
-/* Responsividade */
+/* --- RESPONSIVIDADE E ANIMAÇÕES --- */
+
 @media (max-width: 992px) {
     .charts-grid {
         grid-template-columns: 1fr;
