@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- LÓGICA DE MENU DINÂMICO ---
     const menuItems = [
         { href: '/dashboard/', icon: 'fa-tachometer-alt', text: 'Dashboard', permission: 'inventory.dashboard' },
+        { href: '/manage-employees/', icon: 'fa-users', text: 'Funcionários', permission: 'inventory.manage_tools' }, // Reusando permissão ou criando nova
         { href: '/manage-tools/', icon: 'fa-tools', text: 'Gerenciar Ferramentas', permission: 'inventory.manage_tools' },
         { href: '/virtual-warehouse/', icon: 'fa-warehouse', text: 'Armazém Virtual', permission: 'inventory.virtual_warehouse' },
         { href: '/register-loan/', icon: 'fa-handshake', text: 'Registrar Empréstimo', permission: 'inventory.register_loan' },

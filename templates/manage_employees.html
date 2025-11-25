@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerenciar Funcionários{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/manage_tools.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="manage-tools-container">
+    <h1>Gerenciar Funcionários</h1>
+    <div class="search-add-section">
+        <input type="text" id="employeeSearch" placeholder="Buscar por nome ou matrícula...">
+        <button id="addNewEmployeeBtn"><i class="fas fa-plus"></i> Adicionar Funcionário</button>
+    </div>
+
+    <div class="tool-cards-container" id="employeeListContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<div id="employeeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Adicionar Funcionário</h2>
+            <span class="close-button">&times;</span>
+        </div>
+        
+        <form id="employeeForm">
+            <div class="form-group">
+                <label for="employeeName">Nome Completo</label>
+                <input type="text" id="employeeName" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="employeeRegistration">Matrícula</label>
+                <input type="text" id="employeeRegistration" name="registration_number" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="submitBtn">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module" src="{% static 'js/manage_employees.js' %}"></script>
+{% endblock %}

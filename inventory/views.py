@@ -14,7 +14,8 @@ from .models import Tool, Loan
 from .serializers import ToolSerializer, LoanSerializer
 from django.db.models import Count, Sum, F
 from django.db.models.functions import TruncMonth
-
+from .models import Tool, Loan, Employee
+from .serializers import ToolSerializer, LoanSerializer, EmployeeSerializer
 # Isenta o CSRF para permitir testes via Postman/APIs, mas em produção,
 # a autenticação por token (como JWT) é o ideal.
 @method_decorator(csrf_exempt, name='dispatch')
@@ -26,6 +27,16 @@ class ToolViewSet(viewsets.ModelViewSet):
     serializer_class = ToolSerializer
     permission_classes = [IsAuthenticated]
     
+
+@method_decorator(csrf_exempt, name='dispatch')
+class EmployeeViewSet(viewsets.ModelViewSet):
+    """
+    API para gerenciar Funcionários.
+    """
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    permission_classes = [IsAuthenticated]
+
 @method_decorator(csrf_exempt, name='dispatch')
 class LoanViewSet(viewsets.ModelViewSet):
     """
@@ -34,17 +45,6 @@ class LoanViewSet(viewsets.ModelViewSet):
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
     permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        """
-        Ao criar um novo empréstimo, o usuário logado é automaticamente
-        definido como o mutuário (borrower). A validação de estoque é
-        feita no LoanSerializer.
-        """
-        # Nota: Se o 'borrower' puder ser selecionado na interface,
-        # você pode remover a linha abaixo e enviar o borrower_id do frontend.
-        # Caso contrário, isso garante que o usuário logado fez o empréstimo.
-        serializer.save(borrower=self.request.user)
 
     def perform_update(self, serializer):
         """

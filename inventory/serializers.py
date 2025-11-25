@@ -1,7 +1,7 @@
 # inventory/serializers.py
 
 from rest_framework import serializers
-from .models import Tool, Loan
+from .models import Tool, Loan, Employee
 
 class ToolSerializer(serializers.ModelSerializer):
     """
@@ -32,6 +32,12 @@ class ToolSerializer(serializers.ModelSerializer):
             'supplier'
         ]
 
+# NOVO SERIALIZER
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ['id', 'name', 'registration_number']
+
 class LoanSerializer(serializers.ModelSerializer):
     """
     Serializador para o modelo Loan.
@@ -39,14 +45,15 @@ class LoanSerializer(serializers.ModelSerializer):
     # ADICIONADO: Campos somente leitura para expor os nomes relacionados na API.
     # Isso evita que o frontend precise fazer requisições extras.
     tool_name = serializers.ReadOnlyField(source='tool.name')
-    borrower_username = serializers.ReadOnlyField(source='borrower.username')
+    employee_name = serializers.ReadOnlyField(source='employee.name')
+    employee_registration = serializers.ReadOnlyField(source='employee.registration_number')
 
     class Meta:
         model = Loan
-        # ADICIONADO: 'tool_name' e 'borrower_username' na lista de campos.
+        # ALTERADO: campos de borrower para employee
         fields = [
-            'id', 'tool', 'borrower', 'quantity', 'borrowed_date', 
-            'due_date', 'returned_date', 'tool_name', 'borrower_username'
+            'id', 'tool', 'employee', 'quantity', 'borrowed_date', 
+            'due_date', 'returned_date', 'tool_name', 'employee_name', 'employee_registration'
         ]
         read_only_fields = ['borrowed_date']
 

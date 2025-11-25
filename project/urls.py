@@ -19,6 +19,7 @@ urlpatterns = [
     re_path(r'^active-overdue-loans/$', TemplateView.as_view(template_name='active_overdue_loans.html')),
     re_path(r'^history/$', TemplateView.as_view(template_name='history.html')),
     re_path(r'^settings/$', TemplateView.as_view(template_name='settings.html')),
+    re_path(r'^manage-employees/$', TemplateView.as_view(template_name='manage_employees.html')),
     path("api/", include("inventory.urls")),
     path("api/", include("users.urls")),
     path("admin/", admin.site.urls),

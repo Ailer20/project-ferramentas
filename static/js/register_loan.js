@@ -1,125 +1,119 @@
 import { refreshToken } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const toolSelect = document.getElementById("toolSelect");
-    const borrowerSelect = document.getElementById("borrowerSelect");
+    // Inicializar variáveis
+    const toolSelect = $("#toolSelect"); // Usando jQuery para Select2
+    const employeeSelect = $("#employeeSelect"); // Usando jQuery para Select2
     const borrowedDateInput = document.getElementById("borrowedDate");
     const loanForm = document.getElementById("loanForm");
     const messageDiv = document.getElementById("message");
 
-    // Set today's date for borrowedDate
     const today = new Date();
     borrowedDateInput.value = today.toISOString().split("T")[0];
 
-    // Helper fetch function with retry once on 401
-    async function fetchWithAuth(url, options = {}, retry = true) {
-        options.headers = options.headers || {};
-        options.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
+    // --- Configuração do Fetch com Auth para o Select2 ---
+    // O Select2 usa jQuery ajax, então precisamos interceptar ou passar o token
+    const accessToken = localStorage.getItem("access_token");
 
-        try {
+    // 1. Inicializar Select2 para Ferramentas (Opcional, mas bom para busca)
+    toolSelect.select2();
+    
+    // 2. Inicializar Select2 para Funcionários
+    employeeSelect.select2();
+
+    // Função auxiliar de fetch (a mesma que você já tem)
+    async function fetchWithAuth(url, options = {}) {
+         options.headers = options.headers || {};
+         options.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
+         // ... (lógica de retry igual ao seu arquivo original)
+         try {
             const response = await fetch(url, options);
-            if (response.status === 401 && retry) {
+            if (response.status === 401) {
                 const refreshed = await refreshToken();
-                if (refreshed) {
-                    return fetchWithAuth(url, options, false); // retry once
-                } else {
-                    window.location.href = "/login";
-                    return;
-                }
+                if (refreshed) return fetchWithAuth(url, options); 
+                else window.location.href = "/login";
             }
             return response;
-        } catch (error) {
-            console.error("Fetch error:", error);
-            throw error;
-        }
+        } catch (e) { console.error(e); }
     }
 
-    async function fetchTools() {
-        try {
-            const response = await fetchWithAuth("/api/tools/");
-            if (response.ok) {
-                const tools = await response.json();
-                toolSelect.innerHTML = "<option value=''>Selecione uma ferramenta</option>";
-                tools.forEach(tool => {
-                    const option = document.createElement("option");
-                    option.value = tool.id;
-                    option.textContent = `${tool.name} (Disponíveis: ${tool.available_quantity})`;
-                    toolSelect.appendChild(option);
-                });
-            } else {
-                console.error("Failed to fetch tools:", response.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching tools:", error);
+    // Carregar dados iniciais
+    async function loadData() {
+        // Carregar Ferramentas
+        const toolsRes = await fetchWithAuth("/api/tools/");
+        if (toolsRes && toolsRes.ok) {
+            const tools = await toolsRes.json();
+            // Limpa e adiciona
+            toolSelect.empty();
+            toolSelect.append(new Option("Selecione uma ferramenta", ""));
+            tools.forEach(tool => {
+                const text = `${tool.name} (Disp: ${tool.available_quantity})`;
+                // Desabilita se não tiver estoque
+                const disabled = tool.available_quantity <= 0;
+                const option = new Option(text, tool.id, false, false);
+                if(disabled) option.disabled = true;
+                toolSelect.append(option);
+            });
+            toolSelect.trigger('change'); // Atualiza Select2
         }
-    }
 
-    async function fetchUsers() {
-        try {
-            const response = await fetchWithAuth("/api/users/");
-            if (response.ok) {
-                const users = await response.json();
-                borrowerSelect.innerHTML = "<option value=''>Selecione um usuário</option>";
-                users.forEach(user => {
-                    const option = document.createElement("option");
-                    option.value = user.id;
-                    option.textContent = user.username;
-                    borrowerSelect.appendChild(option);
-                });
-            } else {
-                console.error("Failed to fetch users:", response.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching users:", error);
+        // Carregar Funcionários
+        const empRes = await fetchWithAuth("/api/employees/");
+        if (empRes && empRes.ok) {
+            const employees = await empRes.json();
+            employeeSelect.empty();
+            employeeSelect.append(new Option("Selecione um funcionário", ""));
+            employees.forEach(emp => {
+                const text = `${emp.name} - Matrícula: ${emp.registration_number}`;
+                employeeSelect.append(new Option(text, emp.id));
+            });
+            employeeSelect.trigger('change');
         }
     }
 
     loanForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
-        const toolId = toolSelect.value;
+        
+        // Pega os valores do Select2 (jQuery)
+        const toolId = toolSelect.val();
+        const employeeId = employeeSelect.val();
         const quantity = document.getElementById("quantity").value;
-        const borrowerId = borrowerSelect.value;
-        const borrowedDate = borrowedDateInput.value;
         const dueDate = document.getElementById("dueDate").value;
 
-        if (!toolId || !borrowerId || !dueDate) {
-            messageDiv.textContent = "Preencha todos os campos obrigatórios.";
+        if (!toolId || !employeeId || !dueDate) {
+            messageDiv.textContent = "Preencha todos os campos.";
             messageDiv.style.color = "red";
             return;
         }
 
-        try {
-            const response = await fetchWithAuth("/api/loans/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    tool: parseInt(toolId, 10),
-                    quantity: parseInt(quantity, 10),
-                    borrower: parseInt(borrowerId, 10),
-                    borrowed_date: borrowedDate,
-                    due_date: dueDate
-                }),
-            });
+        const body = {
+            tool: parseInt(toolId),
+            employee: parseInt(employeeId), // Mudou de 'borrower' para 'employee'
+            quantity: parseInt(quantity),
+            borrowed_date: borrowedDateInput.value,
+            due_date: dueDate
+        };
 
-            if (response.ok) {
-                messageDiv.textContent = "Empréstimo registrado com sucesso!";
-                messageDiv.style.color = "green";
-                loanForm.reset();
-                borrowedDateInput.value = today.toISOString().split("T")[0];
-                fetchTools(); // atualizar quantidade disponível
-            } else {
-                const errorData = await response.json();
-                messageDiv.textContent = `Erro ao registrar empréstimo: ${JSON.stringify(errorData)}`;
-                messageDiv.style.color = "red";
-            }
-        } catch (error) {
-            messageDiv.textContent = `Ocorreu um erro: ${error.message}`;
+        const response = await fetchWithAuth("/api/loans/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+
+        if (response && response.ok) {
+            messageDiv.textContent = "Empréstimo registrado!";
+            messageDiv.style.color = "green";
+            loanForm.reset();
+            // Resetar Select2
+            toolSelect.val(null).trigger('change');
+            employeeSelect.val(null).trigger('change');
+            loadData(); // Recarrega para atualizar estoque visual
+        } else {
+            const err = await response.json();
+            messageDiv.textContent = "Erro: " + JSON.stringify(err);
             messageDiv.style.color = "red";
         }
     });
 
-    // Inicial fetch
-    fetchTools();
-    fetchUsers();
+    loadData();
 });

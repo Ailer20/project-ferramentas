@@ -2,6 +2,12 @@ from django.db import models
 from django.db.models import Sum
 from django.utils import timezone
 
+class Employee(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Nome")
+    registration_number = models.CharField(max_length=50, unique=True, verbose_name="Matrícula")
+
+    def __str__(self):
+        return f"{self.name} - {self.registration_number}"
 class Tool(models.Model):
     CONDITION_CHOICES = [
         ('good', 'Boa Condição'),
@@ -48,7 +54,13 @@ class Tool(models.Model):
 class Loan(models.Model):
     tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    borrower = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    employee = models.ForeignKey(
+        Employee, 
+        on_delete=models.CASCADE, 
+        verbose_name="Funcionário",
+        null=True, 
+        blank=True
+    )
     borrowed_date = models.DateField(auto_now_add=True)
     due_date = models.DateField()
     returned_date = models.DateField(blank=True, null=True)
